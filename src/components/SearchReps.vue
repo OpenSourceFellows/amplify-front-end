@@ -20,7 +20,6 @@
                         </v-btn>
                     </v-card-text>
                 </v-card>
-
                 <div id="reprenstatives-list" v-show="hasContent">
                     <div>
                         <v-card
