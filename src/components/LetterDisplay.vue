@@ -1,14 +1,13 @@
+//CHILD
 <template lang="html">
-    <section class="letter-display">
-        <h1>letter-display Component</h1>
-    </section>
+    <section class="letter-display"></section>
 </template>
 
 <script lang="js">
 
   export default  {
     name: 'letter-display',
-    props: [],
+    props: ['congressMembers'],
     mounted () {
 
     },
