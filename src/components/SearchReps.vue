@@ -1,4 +1,3 @@
-// PARENT
 <template lang="html">
     <section class="search-reps">
         <v-row>
@@ -50,7 +49,6 @@
 <script lang="js">
 import LetterDisplay from '@/components/LetterDisplay.vue';
 import RepresentativeCard from '@/components/RepresentativeCard.vue';
-
 import axios from 'axios';
 
   export default  {
