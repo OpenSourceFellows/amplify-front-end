@@ -65,7 +65,7 @@ import axios from 'axios';
       return {
           repName: "",
           congressMembers:[],
-	      hasContent: false,
+          hasContent: false,
           search: ""
       }
     },
@@ -74,12 +74,12 @@ import axios from 'axios';
             this.repName = `Dear ${member.name}`
         },
         CheckInputContent: function () {
-				if (this.search != "") {
-					this.hasContent = true;
-				} else {
-					this.hasContent = false;
-				}
-			},
+                if (this.search != "") {
+                    this.hasContent = true;
+                } else {
+                    this.hasContent = false;
+                }
+            },
         async CreateRepList() {
         try {
             const res = await axios.get(
