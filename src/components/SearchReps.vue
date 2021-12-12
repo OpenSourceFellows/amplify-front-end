@@ -1,41 +1,72 @@
-<template lang="html">
-    <section class="search-reps">
-        <v-row class="pa-14">
+<template lang='html'>
+    <section class='search-reps'>
+        <v-row class='pa-14'>
             <v-col>
                 <v-card flat>
                     <v-card-text>
-                        <v-subheader class="pa-0">
+                        <v-subheader class='pa-0'>
                             Where do you live?
                         </v-subheader>
-                        <v-form ref="form">
+                        <v-form ref='form'>
                             <v-text-field
-                                label="Postal Code"
+                                label='Postal Code'
                                 required
-                                v-on:keyup="CheckInputContent"
-                                v-model="postalCode"
+                                v-on:keyup='CheckInputContent'
+                                v-model='postalCode'
                             ></v-text-field>
                         </v-form>
+                        <v-row>
+                            <v-btn
+                                rounded
+                                dark
+                                :style="{
+         backgroundColor : currentFilter === 'country' ? '#161675 !important' : 'white',color: currentFilter ===  'country' ? 'white' : 'black'}"
+                                v-on:click="FilterList('country')"
+                            >
+                                Federal
+                            </v-btn>
+                            <v-btn
+                                rounded
+                                dark
+                                :style="{
+           backgroundColor : currentFilter === 'administrativeArea1' ? '#161675 !important' : 'white',color: currentFilter === 'administrativeArea1' ? 'white' : 'black'}"
+
+                                v-on:click="FilterList('administrativeArea1')"
+                            >
+                                State
+                            </v-btn>
+                            <v-btn
+                                rounded
+                                dark
+                                :style="{
+           backgroundColor : currentFilter === 'administrativeArea2' ? '#161675 !important' : 'white',color:currentFilter ===  'administrativeArea2' ? 'white' : 'black'}"
+                                v-on:click="FilterList('administrativeArea2')"
+                            >
+                                County
+                            </v-btn>
+                        </v-row>
                         <v-btn
                             :to="{
                                 name: 'Reps',
                                 params: { postalCode: postalCode }
                             }"
-                            v-on:click="CreateRepList()"
-                            clickclass="mr-4"
-                            >Submit
+                            v-on:click='CreateRepList()'
+                            clickclass='mr-4'
+                        >Submit
                         </v-btn>
                     </v-card-text>
                 </v-card>
-                <div id="reprenstatives-list" v-show="hasContent">
+
+                <div id='reprenstatives-list' v-show='hasContent'>
                     <div>
                         <v-card
                             flat
-                            v-for="member in congressMembers"
-                            :key="member.name"
+                            v-for='member in congressMembers'
+                            :key='member.name'
                         >
                             <representative-card
-                                :handleRepClick="handleRepClick"
-                                :member="member"
+                                :handleRepClick='handleRepClick'
+                                :member='member'
                             ></representative-card>
                             <v-divider></v-divider>
                         </v-card>
@@ -44,21 +75,21 @@
             </v-col>
             <v-divider vertical></v-divider>
             <v-col>
-                <div v-if="$auth.isAuthenticated">
-                    <take-action :repName="repName" :letterBody="letterBody">
+                <div v-if='$auth.isAuthenticated'>
+                    <take-action :repName='repName' :letterBody='letterBody'>
                     </take-action>
                 </div>
                 <div v-else>
                     <letter-display
-                        v-if="shouldRender"
-                        :is-step1="isStep1"
-                        :is-step2="isStep2"
-                        :is-step3="isStep3"
+                        v-if='shouldRender'
+                        :is-step1='isStep1'
+                        :is-step2='isStep2'
+                        :is-step3='isStep3'
                     ></letter-display>
                     <letter-load
                         v-else
-                        :repName="repName"
-                        :letterBody="letterBody"
+                        :repName='repName'
+                        :letterBody='letterBody'
                     >
                     </letter-load>
                 </div>
@@ -67,92 +98,110 @@
     </section>
 </template>
 
-<script lang="js">
+<script lang='js'>
 import LetterDisplay from '@/components/LetterDisplay.vue';
 import RepresentativeCard from '@/components/RepresentativeCard.vue';
 import LetterLoad from '@/components/LetterLoad.vue';
 import takeAction from '@/components/takeAction.vue';
 import axios from 'axios';
 
-  export default  {
+export default {
     name: 'SearchReps',
-    components:{
+    components: {
         LetterDisplay,
         RepresentativeCard,
         LetterLoad,
         takeAction
     },
     mounted() {
-        this.CreateRepList()
+        this.CreateRepList();
     },
-    data () {
-      return {
-          repName: String,
-          letterBody: String,
-          congressMembers:[],
-          hasContent: false,
-          postalCode: this.$route.params.postalCode ||"",
-          shouldRender:true,
-          isStep1: Boolean,
-          isStep2: Boolean,
-          isStep3: Boolean
-          }
+    data() {
+        return {
+            repName: String,
+            letterBody: String,
+            currentFilter: String,
+            congressMembers: [],
+            congressMembersUnfiltered: [],
+            hasContent: false,
+            postalCode: this.$route.params.postalCode || '',
+            shouldRender: true,
+            isStep1: Boolean,
+            isStep2: Boolean,
+            isStep3: Boolean
+        };
     },
     methods: {
-        async handleRepClick (member) {
-            try{
+        async FilterList(level) {
+
+            this.currentFilter = level;
+
+            try {
+                const representatives = await axios.get(
+                    `https://www.googleapis.com/civicinfo/v2/representatives?address=${this.postalCode}&levels=${level}&key=${process.env.VUE_APP_GOOGLE_API_KEY}`
+                );
+                this.congressMembers = this.congressMembersUnfiltered;
+                const officialNames = representatives.data.officials.map((current) => current.name);
+                this.congressMembers = this.congressMembers.filter((current) => officialNames.includes(current.name));
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        async handleRepClick(member) {
+            try {
 
                 this.repName = `Dear ${member.name}`;
                 this.shouldRender = false;
                 //from campaign id find template id and then make get request with template id
-                var campaignId =this.$route.params.campaignId;
+                var campaignId = this.$route.params.campaignId;
 
                 const versions = await axios.get(
-                    'https://murmuring-headland-63935.herokuapp.com/api/Letter_Versions/'+ campaignId
-                    );
+                    'https://murmuring-headland-63935.herokuapp.com/api/Letter_Versions/' + campaignId
+                );
 
                 let latestVersion = versions.data[versions.data.length - 1].template_id;
 
 
                 const letter = await axios.get(
                     'https://murmuring-headland-63935.herokuapp.com/api/lob/templates/' + latestVersion
-                    );
+                );
                 this.letterBody = letter.data.versions[0].html;
                 this.isStep2 = true;
 
 
-            } catch(e){
+            } catch (e) {
                 console.error(e);
             }
 
         },
-        CheckInputContent: function () {
-                if (this.postalCode != "" ) {
-                    this.hasContent = true;
-                } else {
-                    this.hasContent = false;
-                }
-            },
+        CheckInputContent: function() {
+            if (this.postalCode != '') {
+                this.hasContent = true;
+            } else {
+                this.hasContent = false;
+            }
+        },
         async CreateRepList() {
-        try {
-            const res = await axios.get(
-                'https://murmuring-headland-63935.herokuapp.com/api/representatives/' + this.postalCode
-            );
-            this.congressMembers = res.data;
-            this.hasContent=true;
-            console.log(res.data);
+            try {
+                const res = await axios.get(
+                    'https://murmuring-headland-63935.herokuapp.com/api/representatives/' + this.postalCode
+                );
+                this.congressMembers = res.data;
+                this.congressMembersUnfiltered = res.data;
+                this.hasContent = true;
+                console.log(res.data);
 
-            this.isStep1 = true;
-        } catch (e) {
-            console.error(e);
-        }
+                this.isStep1 = true;
+            } catch (e) {
+                console.error(e);
+            }
 
         }
     }
-  }
+};
 </script>
 
-<style scoped lang="less">
+<style scoped lang='less'>
 .search-reps {
 }
 </style>
