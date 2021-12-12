@@ -14,7 +14,6 @@
     "axios": "^0.21.1",
     "cli-plugin-eslint": "^0.1.0",
     "core-js": "^3.6.5",
-    "dotenv": "^10.0.0",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
