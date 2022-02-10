@@ -26,7 +26,7 @@
                     />
                 </v-expansion-panel-content>
                 <v-expansion-panel-content>
-                    <v-btn @click="nextPage" >
+                    <v-btn width="160" dark color="theme_darkBlue" @click="nextPage" >
                         Next
                     </v-btn>
                 </v-expansion-panel-content>
@@ -58,7 +58,7 @@
                     <sign-name />
                 </v-expansion-panel-content>
                  <v-expansion-panel-content>
-                    <v-btn @click="nextPage" >
+                    <v-btn width="160" dark color="theme_darkBlue" @click="nextPage" >
                         Next
                     </v-btn>
                 </v-expansion-panel-content>
