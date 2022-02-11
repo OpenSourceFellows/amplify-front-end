@@ -1,7 +1,7 @@
 <template lang="html">
     <section class="take-action">
         <v-expansion-panels v-model="panel" flat>
-            <v-expansion-panel v-model="panel">
+            <v-expansion-panel :key="0" v-model="panel">
                 <v-expansion-panel-header>
                     <v-list-item-avatar class="grey lighten-2" max-width="40px">
                         <span> 1</span>
@@ -25,9 +25,14 @@
                         :letterBody="letterBody"
                     />
                 </v-expansion-panel-content>
+                <v-expansion-panel-content>
+                    <v-btn width="160" dark color="theme_darkBlue" @click="nextPage" >
+                        Next
+                    </v-btn>
+                </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <v-expansion-panel>
+            <v-expansion-panel :key="1">
                 <v-divider></v-divider>
 
                 <v-expansion-panel-header class="flex-nowrap">
@@ -52,8 +57,13 @@
                 <v-expansion-panel-content>
                     <sign-name />
                 </v-expansion-panel-content>
+                 <v-expansion-panel-content>
+                    <v-btn width="160" dark color="theme_darkBlue" @click="nextPage" >
+                        Next
+                    </v-btn>
+                </v-expansion-panel-content>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel :key="2" >
                 <v-divider></v-divider>
 
                 <v-expansion-panel-header>
@@ -103,7 +113,9 @@ export default {
         }
     },
     methods: {
-
+        nextPage () {
+            this.panel = this.panel += 1
+        }
     },
     computed: {
 
